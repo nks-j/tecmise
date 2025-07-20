@@ -43,6 +43,8 @@
 </template>
 
 <script lang="ts" setup>
+import { ref } from 'vue'
+import { useFetch } from 'nuxt/app'
 import { watch } from 'vue'
 import { ChevronLeftIcon } from '@heroicons/vue/24/solid'
 
