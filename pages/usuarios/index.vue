@@ -1,18 +1,21 @@
 <template>
-  <div class="max-w-auto mx-auto p-4">
-    <div class="max-w-6xl mx-auto p-6">
+  <div class="max-w-auto mx-auto p-4 bg-gradient-to-b from-indigo-100 to-white">
+    <div class="max-w-6xl mx-auto p-6 border bg-white rounded-2xl shadow-md 0 transition-shadow duration-200">
       <h1 class="text-3xl font-bold text-indigo-500 mb-3 left">Lista de Usuários</h1>
       <div class="flex items-center gap-4">
         <div class="relative">
-          <button @click="open_filter = !open_filter"
-            class="flex items-center gap-1 px-2 py-1 hover:bg-gray-100 rounded mb-2">
-            Filtrar
-            <AdjustmentsHorizontalIcon class="w-5 h-5" />
-          </button>
+          <div v-if="data">
+            <button @click="open_filter = !open_filter"
+              class="flex items-center gap-1 px-2 py-1 hover:bg-gray-100 rounded mb-2">
+              Filtrar
+              <AdjustmentsHorizontalIcon class="w-5 h-5" />
+            </button>
+          </div>
+
 
           <div v-if="open_filter" class="mx-auto flex gap-4 items-center">
             <!-- Campo a ser filtrado -->
-            <select v-model="campoSelecionado" class="w-32 px-5 py-2 border border-gray-300 rounded mb-2">
+            <select v-model="campoSelecionado" @change="UpdateFilter" class="w-32 px-5 py-2 border border-gray-300 rounded mb-2">
               <option value="cpf">CPF</option>
               <option value="email">Email</option>
             </select>
@@ -21,7 +24,7 @@
               class="w-full px-6 py-2 border border-gray-300 rounded mb-2" />
 
             <datalist id="valores-sugeridos">
-              <option v-for="valor in sugestoesDatalist" :value="valor" >
+              <option v-for="valor in sugestoesDatalist" :value="valor">
               </option>
             </datalist>
           </div>
@@ -29,7 +32,15 @@
       </div>
 
 
-      <div v-if="error && !open_filter" class="text-red-500 mb-4">Erro ao carregar usuários</div>
+      <div v-if="error && !open_filter"
+        class="flex items-center gap-3 p-4 mb-6 rounded-lg border border-red-300 bg-red-50 text-red-700 shadow-sm">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-red-500" fill="none" viewBox="0 0 24 24"
+          stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M12 8v4m0 4h.01M21 12A9 9 0 113 12a9 9 0 0118 0z" />
+        </svg>
+        <span class="text-sm font-medium">Nenhum usuário cadastrado no momento.</span>
+      </div>
       <div v-else-if="pending && !open_filter" class="text-gray-500">Carregando...</div>
 
       <table v-else-if="data" class="w-full border border-gray-300 rounded shadow-md mb-4">
@@ -111,6 +122,9 @@ const usuariosFiltrados = computed(() => {
   })
 })
 
-console.log('Status:', status.value);
-console.log('Data:', data.value);
+function UpdateFilter(e: Event) {
+  valorSelecionado.value = ""
+}
+
+
 </script>

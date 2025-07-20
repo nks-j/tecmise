@@ -1,32 +1,51 @@
 <template>
-  <div class="max-w-full mx-auto p-4">
-    <h1 class="text-4xl font-bold text-indigo-500 mb-6 text-center">Cadastrar Usuário</h1>
-    <form @submit.prevent="cadastrarUsuario"
-      class="max-w-md mx-auto flex flex-col gap-4 border-2 p-6 bg-zinc-100 rounded shadow-md hover:shadow-blue-400 transition-shadow duration-200">
-      <input v-model="novoUsuario.nome" type="text" placeholder="Nome" class="input p-2 rounded" required />
-      <input v-model="novoUsuario.email" type="email" placeholder="Email" class="input p-2 rounded" required />
-      <input v-model="novoUsuario.cpf" type="text" @input="formatarCPF" maxlength="14" minlength="14" placeholder="CPF"
-        class="input p-2 rounded" required />
-      <input v-model="novoUsuario.nascimento" type="date" class="input p-2 rounded" required />
-      <input v-model="novoUsuario.telefone" type="text" placeholder="Telefone" class="input p-2 rounded" />
-      <button type="submit" class="col-span-1 md:col-span-2 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded">
-        Cadastrar
-      </button>
-      <div v-if="resposta === 'Cadastro realizado'" class="text-center text-green-600 font-semibold">
-        Cadastro realizado com sucesso!
-      </div>
-      <div v-else-if="resposta === 'Usuário já cadastrado'" class="text-center text-red-600 font-semibold">
-        Usuário já cadastrado.
-      </div>
-      <div v-else-if="resposta === 'False'" class="text-center text-red-600 font-semibold">
-        Erro ao cadastrar usuário.
-      </div>
-    </form>
-
+  <div class="max-w-full mx-auto bg-zinc-100 min-h-screen pt-10">
+    <div class="">
+      <form @submit.prevent="cadastrarUsuario"
+        class="max-w-md mx-auto flex flex-col gap-4 border-2 p-6 bg-white rounded-2xl shadow-md hover:shadow-blue-400 transition-shadow duration-200">
+        <div class="flex items-center justify-between mb-2 ">
+          <div>
+            <p class="text-4xl font-bold text-indigo-500 text-center">Cadastrar</p>
+          </div>
+          <div class="text-right">
+            <NuxtLink to="/usuarios" title="Voltar">
+              <button type="button"
+                class="hover:shadow-form rounded-md bg-[#6A64F1] py-2 px-2 text-left text-base font-semibold text-white outline-none">
+                <ChevronLeftIcon class="w-5 h-5" />
+              </button>
+            </NuxtLink>
+          </div>
+        </div>
+        <input v-model="novoUsuario.nome" type="text" placeholder="Nome" class="input p-2 rounded-md bg-zinc-100 border"
+          required />
+        <input v-model="novoUsuario.email" type="email" placeholder="Email"
+          class="input p-2 rounded-md bg-zinc-100 border" required />
+        <input v-model="novoUsuario.cpf" type="text" @input="formatarCPF" maxlength="14" minlength="14"
+          placeholder="CPF" class="input p-2 rounded-md bg-zinc-100 border" required />
+        <input v-model="novoUsuario.nascimento" type="date" class="input p-2 rounded-md bg-zinc-100 border" required />
+        <input v-model="novoUsuario.telefone" type="text" @input="formatarTelefone" maxlength="15" minlength="15"
+          placeholder="Telefone" class="input p-2 rounded-md bg-zinc-100 border" />
+        <button type="submit" class="col-span-1 md:col-span-2 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded">
+          Cadastrar
+        </button>
+        <div v-if="resposta === 'Cadastro realizado'" class="text-center text-green-600 font-semibold">
+          Cadastro realizado com sucesso!
+        </div>
+        <div v-else-if="resposta === 'Usuário já cadastrado'" class="text-center text-red-600 font-semibold">
+          Usuário já cadastrado.
+        </div>
+        <div v-else-if="resposta === 'False'" class="text-center text-red-600 font-semibold">
+          Erro ao cadastrar usuário.
+        </div>
+      </form>
+    </div>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { watch } from 'vue'
+import { ChevronLeftIcon } from '@heroicons/vue/24/solid'
+
 type Usuario = {
   nome: string
   email: string
@@ -75,7 +94,7 @@ const cadastrarUsuario = async () => {
   }
 }
 
-import { watch } from 'vue'
+
 
 watch(() => novoUsuario.value.cpf, async (cpf) => {
   if (cpf.length !== 14) {
@@ -128,6 +147,26 @@ function formatarCPF(e: Event) {
   }
 
   novoUsuario.value.cpf = value
+}
+
+function formatarTelefone(e: Event) {
+  const input = e.target as HTMLInputElement
+  let value = input.value.replace(/\D/g, '') // remove tudo que não for número
+
+  if (value.length > 11) value = value.slice(0, 11)
+
+  // Aplica máscara: (XX) XXXXX-XXXX
+  if (value.length > 10) {
+    value = value.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3')
+  } else if (value.length > 6) {
+    value = value.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3')
+  } else if (value.length > 2) {
+    value = value.replace(/(\d{2})(\d{0,5})/, '($1) $2')
+  } else {
+    value = value
+  }
+
+  novoUsuario.value.telefone = value
 }
 
 </script>
